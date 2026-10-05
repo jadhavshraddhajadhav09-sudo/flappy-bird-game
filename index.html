@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flappy Bird</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1d2b3a;
+      font-family: "Trebuchet MS", Verdana, sans-serif;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    .wrap {
+      position: relative;
+      width: 400px;
+      max-width: 100vw;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
+      cursor: pointer;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, .93);
+      padding: 22px 28px;
+      border-radius: 16px;
+      text-align: center;
+      color: #24323f;
+      pointer-events: auto;
+    }
+
+    .card h2 {
+      font-size: 28px;
+      margin-bottom: 6px;
+    }
+
+    .card p {
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .card button {
+      margin-top: 12px;
+      padding: 10px 26px;
+      font-size: 17px;
+      font-weight: bold;
+      color: #fff;
+      background: #e8742c;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+    }
+
+    .card button:hover {
+      background: #d0631f;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <canvas id="game" width="400" height="600"></canvas>
+
+    <div id="startScreen" class="overlay">
+      <div class="card">
+        <h2>Ready to fly?</h2>
+        <p>Press Space, click, or tap to flap</p>
+        <p>Pass through the pipes to score</p>
+        <button id="startBtn">Start</button>
+      </div>
+    </div>
+
+    <div id="overScreen" class="overlay hidden">
+      <div class="card">
+        <h2>Game over</h2>
+        <p>Score: <b id="finalScore">0</b></p>
+        <p>Best: <b id="bestScore">0</b></p>
+        <button id="restartBtn">Restart</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    const W = canvas.width, H = canvas.height;
+    const GROUND_H = 90;
+
+    const startScreen = document.getElementById("startScreen");
+    const overScreen = document.getElementById("overScreen");
+    const finalScoreEl = document.getElementById("finalScore");
+    const bestScoreEl = document.getElementById("bestScore");
+
+    // Physics
+    const GRAVITY = 0.45;
+    const FLAP = -7.6;
+    const PIPE_W = 64;
+    const PIPE_GAP = 150;
+    const PIPE_SPACING = 210;
+
+    let bird, pipes, score, best, speed, state, frame, groundX;
+    // state: "ready" | "playing" | "over"
+
+    try { best = parseInt(localStorage.getItem("flappyBest")) || 0; } catch (e) { best = 0; }
+
+    function reset() {
+      bird = { x: 90, y: H / 2 - 40, r: 15, vy: 0, angle: 0 };
+      pipes = [];
+      score = 0;
+      speed = 2.4;
+      frame = 0;
+      groundX = 0;
+      addPipe(W + 60);
+      addPipe(W + 60 + PIPE_SPACING);
+    }
+
+    function addPipe(x) {
+      const minTop = 70;
+      const maxTop = H - GROUND_H - PIPE_GAP - 70;
+      const top = minTop + Math.random() * (maxTop - minTop);
+      pipes.push({ x: x, top: top, passed: false });
+    }
+
+    function flap() {
+      if (state === "ready") return;
+      if (state === "playing") bird.vy = FLAP;
+    }
+
+    function startGame() {
+      reset();
+      state = "playing";
+      startScreen.classList.add("hidden");
+      overScreen.classList.add("hidden");
+      bird.vy = FLAP;
+    }
+
+    function endGame() {
+      state = "over";
+      if (score > best) {
+        best = score;
+        try { localStorage.setItem("flappyBest", best); } catch (e) { }
+      }
+      finalScoreEl.textContent = score;
+      bestScoreEl.textContent = best;
+      overScreen.classList.remove("hidden");
+    }
+
+    // Input
+    document.addEventListener("keydown", function (e) {
+      if (e.code === "Space") {
+        e.preventDefault();
+        if (state === "playing") flap();
+        else if (state === "ready") startGame();
+        else if (state === "over") startGame();
+      }
+    });
+    canvas.addEventListener("pointerdown", function (e) {
+      e.preventDefault();
+      if (state === "playing") flap();
+      else if (state === "ready") startGame();
+    });
+    document.getElementById("startBtn").addEventListener("click", startGame);
+    document.getElementById("restartBtn").addEventListener("click", startGame);
+
+    // Update
+    function update() {
+      frame++;
+      groundX = (groundX - speed) % 24;
+
+      if (state === "ready") {
+        bird.y = H / 2 - 40 + Math.sin(frame / 12) * 8;
+        return;
+      }
+      if (state === "over") {
+        if (bird.y + bird.r < H - GROUND_H) {
+          bird.vy += GRAVITY;
+          bird.y += bird.vy;
+          bird.angle = Math.min(Math.PI / 2, bird.angle + 0.08);
+        }
+        return;
+      }
+
+      // playing
+      bird.vy += GRAVITY;
+      bird.y += bird.vy;
+      bird.angle = Math.max(-0.45, Math.min(1.2, bird.vy * 0.075));
+
+      for (const p of pipes) p.x -= speed;
+
+      if (pipes.length && pipes[0].x + PIPE_W < -10) pipes.shift();
+      const last = pipes[pipes.length - 1];
+      if (last.x < W - PIPE_SPACING + 40) addPipe(last.x + PIPE_SPACING);
+
+      for (const p of pipes) {
+        if (!p.passed && p.x + PIPE_W < bird.x - bird.r) {
+          p.passed = true;
+          score++;
+          speed = Math.min(4.6, 2.4 + score * 0.08);
+        }
+        const hitX = bird.x + bird.r - 3 > p.x && bird.x - bird.r + 3 < p.x + PIPE_W;
+        const hitY = bird.y - bird.r + 3 < p.top || bird.y + bird.r - 3 > p.top + PIPE_GAP;
+        if (hitX && hitY) { endGame(); return; }
+      }
+
+      if (bird.y + bird.r >= H - GROUND_H) {
+        bird.y = H - GROUND_H - bird.r;
+        endGame();
+        return;
+      }
+      if (bird.y - bird.r <= 0) {
+        bird.y = bird.r;
+        bird.vy = 0;
+      }
+    }
+
+    // Drawing
+    function drawSky() {
+      const g = ctx.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, "#5ec6ee");
+      g.addColorStop(1, "#c9eefb");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+
+      // clouds
+      ctx.fillStyle = "rgba(255,255,255,.8)";
+      for (let i = 0; i < 4; i++) {
+        const cx = ((i * 170 - frame * 0.25) % (W + 140) + (W + 140)) % (W + 140) - 70;
+        const cy = 90 + i * 70;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 20, 0, Math.PI * 2);
+        ctx.arc(cx + 22, cy - 8, 26, 0, Math.PI * 2);
+        ctx.arc(cx + 48, cy, 20, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function drawPipe(p) {
+      const bottomY = p.top + PIPE_GAP;
+      ctx.fillStyle = "#4caf3d";
+      ctx.strokeStyle = "#2c7a24";
+      ctx.lineWidth = 3;
+
+      ctx.fillRect(p.x, 0, PIPE_W, p.top);
+      ctx.strokeRect(p.x, -3, PIPE_W, p.top + 3);
+      ctx.fillRect(p.x - 4, p.top - 26, PIPE_W + 8, 26);
+      ctx.strokeRect(p.x - 4, p.top - 26, PIPE_W + 8, 26);
+
+      ctx.fillRect(p.x, bottomY, PIPE_W, H - GROUND_H - bottomY);
+      ctx.strokeRect(p.x, bottomY, PIPE_W, H - GROUND_H - bottomY + 3);
+      ctx.fillRect(p.x - 4, bottomY, PIPE_W + 8, 26);
+      ctx.strokeRect(p.x - 4, bottomY, PIPE_W + 8, 26);
+
+      ctx.fillStyle = "rgba(255,255,255,.22)";
+      ctx.fillRect(p.x + 8, 0, 8, p.top - 26);
+      ctx.fillRect(p.x + 8, bottomY + 26, 8, H - GROUND_H - bottomY - 26);
+    }
+
+    function drawGround() {
+      ctx.fillStyle = "#ded895";
+      ctx.fillRect(0, H - GROUND_H, W, GROUND_H);
+      ctx.fillStyle = "#73bf2e";
+      ctx.fillRect(0, H - GROUND_H, W, 16);
+      ctx.fillStyle = "#5aa11f";
+      for (let x = groundX - 24; x < W + 24; x += 24) {
+        ctx.beginPath();
+        ctx.moveTo(x, H - GROUND_H);
+        ctx.lineTo(x + 12, H - GROUND_H + 16);
+        ctx.lineTo(x + 24, H - GROUND_H);
+        ctx.fill();
+      }
+      ctx.fillStyle = "#c9c27a";
+      ctx.fillRect(0, H - GROUND_H + 16, W, 4);
+    }
+
+    function drawBird() {
+      ctx.save();
+      ctx.translate(bird.x, bird.y);
+      ctx.rotate(bird.angle);
+
+      // body
+      ctx.fillStyle = "#ffd23f";
+      ctx.beginPath();
+      ctx.arc(0, 0, bird.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#c98f00";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // wing
+      const wing = Math.sin(frame / 3) * 4;
+      ctx.fillStyle = "#f5a623";
+      ctx.beginPath();
+      ctx.ellipse(-4, 3 + wing * 0.3, 8, 5 + wing * 0.4, -0.3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // eye
+      ctx.fillStyle = "#fff";
+      ctx.beginPath();
+      ctx.arc(6, -5, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#222";
+      ctx.beginPath();
+      ctx.arc(8, -5, 2.4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // beak
+      ctx.fillStyle = "#ef5b2b";
+      ctx.beginPath();
+      ctx.moveTo(11, 0);
+      ctx.lineTo(22, 3);
+      ctx.lineTo(11, 8);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function drawScore() {
+      if (state === "ready") return;
+      ctx.font = "bold 46px 'Trebuchet MS', sans-serif";
+      ctx.textAlign = "center";
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = "#24323f";
+      ctx.strokeText(score, W / 2, 80);
+      ctx.fillStyle = "#fff";
+      ctx.fillText(score, W / 2, 80);
+    }
+
+    function draw() {
+      drawSky();
+      for (const p of pipes) drawPipe(p);
+      drawGround();
+      drawBird();
+      drawScore();
+    }
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    state = "ready";
+    reset();
+    loop();
+  </script>
+</body>
+
+</html>
