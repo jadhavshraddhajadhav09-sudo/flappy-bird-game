@@ -203,82 +203,67 @@
     }
   </style>
   <style>
-  /* Import a fashionable, modern font from Google Fonts (e.g., 'Poppins' or 'Fredoka' for games) */
-  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Poppins:wght@400;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
 
-  body {
-    font-family: 'Fredoka', 'Poppins', sans-serif;
-    background-color: #70c5ce; /* Flappy bird style sky background */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
-  }
+body {
+  font-family: 'Fredoka', sans-serif;
+  background-color: #70c5ce;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
 
-  .game-container {
-    text-align: center;
-  }
+#loginScreen {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 20px 30px;
+  border-radius: 12px;
+}
 
-  h1 {
-    font-size: 42px;
-    color: #ffffff;
-    text-shadow: 2px 2px #000;
-    margin-bottom: 5px;
-  }
+.login-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
 
-  h3 {
-    font-size: 20px;
-    color: #f8f8f8;
-    margin-bottom: 20px;
-  }
+.login-row h2 {
+  color: white;
+  font-size: 24px;
+  margin: 0;
+  white-space: nowrap;
+}
 
-  /* This container keeps everything in a horizontal line */
-  .login-row {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Space between elements */
-    background: rgba(255, 255, 255, 0.2);
-    padding: 10px;
-    border-radius: 10px;
-  }
+.login-row input {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 14px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+}
 
-  .login-row input {
-    font-family: 'Poppins', sans-serif;
-    font-size: 14px;
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    outline: none;
-  }
+.login-row button {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
 
-  .login-row button {
-    font-family: 'Fredoka', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.2s;
-  }
+.btn-standard {
+  background-color: #f39c12;
+  color: white;
+}
 
-  /* Standard Login / Create Account buttons */
-  .btn-standard {
-    background-color: #f39c12;
-    color: white;
-  }
-
-  .btn-standard:hover {
-    background-color: #d68910;
-  }
-
-  /* Continue with Google button styled in Pink */
-  .btn-google {
-    background-color: #ff4081; /* Vibrant pink */
-    color: white;
-  }
+.btn-google {
+  background-color: #ff4081; /* Pink */
+  color: white;
+}
 
   .btn-google:hover {
     background-color: #e03570;
