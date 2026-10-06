@@ -301,19 +301,48 @@ body {
   pointer-events: none;
   z-index: 1;
 }
-
+    
 @keyframes flyLeftToRight {
+  /* -- ANIMATED FLYING BIRDS WITH WING FLAP -- */
+.bird-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes flyAndFlap {
   0% {
-    transform: translateX(-50px) translateY(0);
+    transform: translateX(-50px) translateY(0) scaleX(1);
+  }
+  25% {
+    transform: translateY(-25px) scaleX(1); /* Flap up */
   }
   50% {
-    transform: translateX(50vw) translateY(-30px);
+    transform: translateY(0) scaleX(1); /* Flap down */
+  }
+  75% {
+    transform: translateY(-25px) scaleX(1); /* Flap up */
   }
   100% {
-    transform: translateX(105vw) translateY(0);
+    transform: translateX(105vw) translateY(0) scaleX(1);
   }
 }
 
+.flying-bird {
+  position: absolute;
+  font-size: 32px;
+  animation: flyAndFlap linear infinite;
+  opacity: 0.9;
+}
+
+/* Different speeds for each bird */
+.bird-1 { top: 20%; animation-duration: 8s; animation-delay: 0s; }
+.bird-2 { top: 45%; animation-duration: 11s; animation-delay: -3s; font-size: 26px; }
+.bird-3 { top: 70%; animation-duration: 6s; animation-delay: -5s; font-size: 30px; }
 .flying-bird {
   position: absolute;
   font-size: 32px;
@@ -325,7 +354,7 @@ body {
 .bird-1 { top: 20%; animation-duration: 9s; animation-delay: 0s; }
 .bird-2 { top: 50%; animation-duration: 12s; animation-delay: -3s; font-size: 24px; }
 .bird-3 { top: 75%; animation-duration: 7s; animation-delay: -5s; font-size: 28px; }
-
+    
 .btn-google:hover {
   background-color: #e03570;
 }
