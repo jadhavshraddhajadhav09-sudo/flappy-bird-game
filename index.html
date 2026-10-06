@@ -24,6 +24,8 @@
     max-width: 400px;
     width: 100%;
     text-align: center;
+    display:flex;
+    flex-direction:column;
 }
 
 .loginbox h1 {
@@ -102,14 +104,15 @@
 }
 
 #googleBtn {
-    background: #fff;
-    color: #333;
-    border: 2px solid #e0e0e0;
+    background: #ff69B4;
+    color: white;
+    border: none;
 }
 
 #googleBtn:hover {
-    background: #f5f5f5;
-    border-color: #667eea;
+    background: #ff1493;
+    transform:translateY(-2px);
+  box-shadow:0 10px 20px rgb(255,105,180,0.3);
 }
 
 #loginMessage {
