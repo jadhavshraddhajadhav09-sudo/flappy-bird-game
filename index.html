@@ -292,7 +292,7 @@ body {
 }
 
 /* -- ANIMATED FLYING BIRDS -- */
-.bird-container {
+.bird-flock {
   position: absolute;
   top: 0;
   left: 0;
@@ -305,13 +305,13 @@ body {
 @keyframes flyLeftToRight {
   /* -- ANIMATED FLYING BIRDS WITH WING FLAP -- */
 .bird-container {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   pointer-events: none;
-  z-index: 1;
+  z-index: 999; /* Put them right on top of the background */
 }
 
 @keyframes flyAndFlap {
