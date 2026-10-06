@@ -207,55 +207,55 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
 
-/* Animate the background sky slightly */
 @keyframes skyMove {
   0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 body {
   font-family: 'Fredoka', sans-serif;
-  background: linear-gradient(270deg, #70c5ce, #4fc3f7); /* Subtle gradient */
-  background-size: 400% 400%;
-  animation: skyMove 15s ease infinite;
+  background: linear-gradient(135deg, #4fc3f7, #70c5ce, #29b6f6);
+  background-size: 300% 300%;
+  animation: skyMove 10s ease infinite;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   margin: 0;
-  overflow: hidden; /* Hide birds flying off-screen */
+  overflow: hidden;
 }
 
 #loginScreen {
-  background: rgba(255, 255, 255, 0.15); /* Semi-transparent white */
+  background: rgba(255, 255, 255, 0.2);
   padding: 40px;
   border-radius: 16px;
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(4px); /* Glassmorphism effect */
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 10;
 }
 
-/* Vertical stacking container */
 .login-column {
   display: flex;
   flex-direction: column;
-  align-items: stretch; /* Full width elements */
-  gap: 18px;
-  width: 280px; /* Fixed width for the login box */
+  align-items: stretch;
+  gap: 16px;
+  width: 280px;
 }
 
 .login-column h2 {
   color: #fff;
-  font-size: 34px;
+  font-size: 32px;
   text-align: center;
-  margin: 0 0 15px 0;
-  text-shadow: 2px 2px #000; /* Game-style shadow */
+  margin: 0 0 10px 0;
+  text-shadow: 2px 2px #000;
 }
 
 .login-column input {
   font-family: 'Fredoka', sans-serif;
-  font-size: 16px;
-  padding: 12px 16px;
+  font-size: 15px;
+  padding: 12px 14px;
   border: 1px solid #ccc;
   border-radius: 8px;
   outline: none;
@@ -264,13 +264,13 @@ body {
 
 .login-column button {
   font-family: 'Fredoka', sans-serif;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  padding: 12px 16px;
+  padding: 12px 14px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: 0.2s;
 }
 
 .btn-standard {
@@ -286,6 +286,45 @@ body {
   background-color: #ff4081; /* Pink */
   color: white;
 }
+
+.btn-google:hover {
+  background-color: #e03570;
+}
+
+/* -- ANIMATED FLYING BIRDS -- */
+.bird-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes flyLeftToRight {
+  0% {
+    transform: translateX(-50px) translateY(0);
+  }
+  50% {
+    transform: translateX(50vw) translateY(-30px);
+  }
+  100% {
+    transform: translateX(105vw) translateY(0);
+  }
+}
+
+.flying-bird {
+  position: absolute;
+  font-size: 32px;
+  animation: flyLeftToRight linear infinite;
+  opacity: 0.85;
+}
+
+/* Different speeds and positions for each bird */
+.bird-1 { top: 20%; animation-duration: 9s; animation-delay: 0s; }
+.bird-2 { top: 50%; animation-duration: 12s; animation-delay: -3s; font-size: 24px; }
+.bird-3 { top: 75%; animation-duration: 7s; animation-delay: -5s; font-size: 28px; }
 
 .btn-google:hover {
   background-color: #e03570;
@@ -336,13 +375,12 @@ body {
 </style>
 </head>
   <body>
-  <!-- -- NEW HTML FOR VERTICAL LAYOUT AND BIRD FLOCK -- -->
-
-  <div class="bird-flock">
-    <div class="bird bird-1"></div>
-    <div class="bird bird-2"></div>
-    <div class="bird bird-3"></div>
-    <div class="bird bird-4"></div>
+<body>
+  <!-- Animated Background Birds -->
+  <div class="bird-container">
+    <div class="flying-bird bird-1">🐦</div>
+    <div class="flying-bird bird-2">🐦</div>
+    <div class="flying-bird bird-3">🐦</div>
   </div>
 
   <div id="loginScreen">
